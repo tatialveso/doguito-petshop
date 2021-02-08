@@ -1,24 +1,31 @@
 import { clienteService } from '../service/cliente-service.js'
 
-const getURL = new URL(window.location)
-const id = getURL.searchParams.get('id')
+(async () => {
+    const getURL = new URL(window.location)
+    const id = getURL.searchParams.get('id')
 
-const inputNome = document.querySelector('[data-nome]')
-const inputEmail = document.querySelector('[data-email]')
+    const inputNome = document.querySelector('[data-nome]')
+    const inputEmail = document.querySelector('[data-email]')
 
-clienteService.detalhaCliente(id)
-.then( dados => {
-    inputNome.value = dados.nome
-    inputEmail.value = dados.email
-})
+    try {
+        const dados = await clienteService.detalhaCliente(id)
+        inputNome.value = dados.nome
+        inputEmail.value = dados.email
+    }
+    catch (erro) {
+        window.location.href = '../telas/erro.html'
+    }
 
-const form = document.querySelector('[data-form]')
+    const form = document.querySelector('[data-form]')
 
-form.addEventListener('submit', (event) => {
-    event.preventDefault()
-
-    clienteService.editaCliente(id, inputNome.value, inputEmail.value)
-    .then(() => {
-        window.location.href = '../telas/edicao_concluida.html'
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault()
+        try {
+            await clienteService.editaCliente(id, inputNome.value, inputEmail.value)
+            window.location.href = '../telas/edicao_concluida.html'
+        }
+        catch (erro) {
+            window.location.href = '../telas/erro.html'
+        }
     })
-})
+})()
