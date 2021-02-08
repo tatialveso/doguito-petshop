@@ -21,7 +21,14 @@ const criarCliente = (nome, email) => {
     })
 }
 
+const removeCliente = (id) => {
+    return fetch(`http://localhost:3000/profile/${id}`, {
+        method: 'DELETE'
+    })
+}
+
 export const clienteService = {
     listaClientes,
-    criarCliente
+    criarCliente,
+    removeCliente
 }

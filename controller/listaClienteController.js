@@ -1,6 +1,6 @@
 import { clienteService } from '../service/cliente-service.js'
 
-const criarNovaLinha = (nome, email) => {
+const criarNovaLinha = (nome, email, id) => {
     const linhaNovoCliente = document.createElement('tr')
     const conteudo = `
         <td class="td" data-td>${ nome }</td>
@@ -8,7 +8,7 @@ const criarNovaLinha = (nome, email) => {
         <td>
             <ul class="tabela__botoes-controle">
                 <li>
-                    <a href="../telas/edita_cliente.html?id="" class="botao-simples botao-simples--editar">Editar</a>
+                    <a href="../telas/edita_cliente.html?id=${id}" class="botao-simples botao-simples--editar">Editar</a>
                 </li>
                 <li>
                     <button class="botao-simples botao-simples--excluir" type="button">Excluir</button>
@@ -17,15 +17,29 @@ const criarNovaLinha = (nome, email) => {
         </td>
         `
     linhaNovoCliente.innerHTML = conteudo
+    linhaNovoCliente.dataset.id = id
     return linhaNovoCliente
 }
 
 const tabela = document.querySelector('[data-tabela]')
 
+tabela.addEventListener('click', (event) => {
+    let deleteBtn = event.target.className == 'botao-simples botao-simples--excluir'
+
+    if(deleteBtn) {
+        const linhaCliente = event.target.closest('[data-id]')
+        let id = linhaCliente.dataset.id
+        clienteService.removeCliente(id)
+        .then(() => {
+            linhaCliente.remove()
+        })
+    }
+})
+
 clienteService.listaClientes().then(data => {
     data.forEach(elemento => {
         tabela.appendChild(
-            criarNovaLinha(elemento.nome, elemento.email)
+            criarNovaLinha(elemento.nome, elemento.email, elemento.id)
         )
     })
 })
